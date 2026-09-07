@@ -16,13 +16,19 @@ Java-programming/
     │   ├── Calculos.java
     │   ├── Calculadora.java
     │   └── Main.java
-    └── Bank_System/
-        ├── Imprimivel.java
-        ├── ContaBancaria.java
-        ├── ContaCorrente.java
-        ├── ContaPoupanca.java
-        ├── Relatorio.java
-        └── Executavel.java
+    ├── Bank_System/
+    │   ├── Imprimivel.java
+    │   ├── ContaBancaria.java
+    │   ├── ContaCorrente.java
+    │   ├── ContaPoupanca.java
+    │   ├── Relatorio.java
+    │   └── Executavel.java
+    └── EcommercePaymentGateway/
+        ├── MetodoPagamento.java
+        ├── PagamentoCartao.java
+        ├── PagamentoPix.java
+        ├── CarrinhoDeCompras.java
+        └── Main.java
 ```
 
 ---
@@ -132,6 +138,54 @@ classDiagram
 
 ---
 
+## 🛒 Project 03: E-Commerce Payment Gateway (Strategy Pattern)
+
+An e-commerce payment processing module demonstrating the **Strategy Pattern** (GoF) to support interchangeable payment algorithms at runtime.
+
+### Core Features
+- **Strategy Design Pattern:** Decouples payment execution and refund operations from the shopping cart context (`CarrinhoDeCompras`) via the `MetodoPagamento` interface.
+- **Open/Closed Principle (OCP):** New payment gateways (e.g. Crypto, Boleto, PayPal) can be added cleanly without altering existing shopping cart logic.
+- **Polymorphic Execution:** The cart seamlessly delegates processing to whichever concrete strategy is active (`PagamentoCartao`, `PagamentoPix`).
+- **Defensive Validation:** Null-checks against unassigned payment methods, positive amount assertions, and transaction identifier sanitization.
+
+### UML Class Diagram
+
+```mermaid
+classDiagram
+    direction BT
+
+    class CarrinhoDeCompras {
+        -MetodoPagamento metodo
+        +CarrinhoDeCompras()
+        +CarrinhoDeCompras(MetodoPagamento)
+        +definirMetodo(MetodoPagamento) void
+        +getMetodo() MetodoPagamento
+        +finalizarCompra(double) void
+    }
+
+    class MetodoPagamento {
+        <<interface>>
+        +processarPagamento(double) void
+        +estornar(String) void
+    }
+
+    class PagamentoCartao {
+        +processarPagamento(double) void
+        +estornar(String) void
+    }
+
+    class PagamentoPix {
+        +processarPagamento(double) void
+        +estornar(String) void
+    }
+
+    CarrinhoDeCompras o-- MetodoPagamento : usa
+    PagamentoCartao ..|> MetodoPagamento : implements
+    PagamentoPix ..|> MetodoPagamento : implements
+```
+
+---
+
 ## 🚀 How to Run
 
 ### Prerequisites
@@ -154,4 +208,9 @@ classDiagram
    ```bash
    javac -d bin src/Bank_System/*.java
    java -cp bin Bank_System.Executavel
+   ```
+4. Compile and run **Project 03 (E-Commerce Payment Gateway)**:
+   ```bash
+   javac -d bin src/EcommercePaymentGateway/*.java
+   java -cp bin EcommercePaymentGateway.Main
    ```

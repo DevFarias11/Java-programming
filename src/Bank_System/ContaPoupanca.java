@@ -11,7 +11,6 @@ public class ContaPoupanca extends ContaBancaria implements Imprimivel {
     private double limite;
 
     public ContaPoupanca() {
-        super();
     }
 
     public ContaPoupanca(int numeroConta, double saldo, double limite) {
