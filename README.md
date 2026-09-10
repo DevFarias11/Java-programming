@@ -23,11 +23,17 @@ Java-programming/
     │   ├── ContaPoupanca.java
     │   ├── Relatorio.java
     │   └── Executavel.java
-    └── EcommercePaymentGateway/
-        ├── MetodoPagamento.java
-        ├── PagamentoCartao.java
-        ├── PagamentoPix.java
-        ├── CarrinhoDeCompras.java
+    ├── EcommercePaymentGateway/
+    │   ├── MetodoPagamento.java
+    │   ├── PagamentoCartao.java
+    │   ├── PagamentoPix.java
+    │   ├── CarrinhoDeCompras.java
+    │   └── Main.java
+    └── StorageOrquestrator_MultiCloud/
+        ├── CloudStorageProvider.java
+        ├── AWSStorage.java
+        ├── AzureStorage.java
+        ├── GerenciadorDeArquivos.java
         └── Main.java
 ```
 
@@ -186,6 +192,53 @@ classDiagram
 
 ---
 
+## ☁️ Project 04: Multi-Cloud Storage Orchestrator (Strategy / Delegation Pattern)
+
+A multi-cloud storage management and synchronization system demonstrating the **Delegation Pattern**, **1-to-N Object Aggregation**, and clean contract-driven decoupling across heterogeneous cloud storage providers (AWS S3, Azure Blob Storage).
+
+### Core Features
+- **Delegation Design Pattern:** `GerenciadorDeArquivos` dispatches broadcast upload tasks (`uploadParaTodos`) to a dynamic collection of registered cloud providers without concerning itself with vendor-specific upload mechanics.
+- **Dependency Inversion Principle (DIP):** The high-level orchestrator depends strictly on the abstraction (`CloudStorageProvider`), completely isolated from concrete vendor implementations (`AWSStorage`, `AzureStorage`).
+- **Open/Closed Principle (OCP):** Additional cloud platforms (e.g. Google Cloud Storage, Cloudflare R2, Oracle Object Storage) can be integrated by implementing `CloudStorageProvider` without any modification to `GerenciadorDeArquivos`.
+- **Defensive Execution:** Validates provider registrations against `null`, checks for non-empty provider sets before initiating uploads, and asserts payload/filename integrity.
+
+### UML Class Diagram
+
+```mermaid
+classDiagram
+    direction BT
+
+    class GerenciadorDeArquivos {
+        -List~CloudStorageProvider~ provedores
+        +GerenciadorDeArquivos()
+        +adicionarProvedor(CloudStorageProvider) void
+        +uploadParaTodos(String, byte[]) void
+        +getProvedores() List~CloudStorageProvider~
+    }
+
+    class CloudStorageProvider {
+        <<interface>>
+        +uploadArquivo(String, byte[]) void
+        +downloadArquivo(String) byte[]
+    }
+
+    class AWSStorage {
+        +uploadArquivo(String, byte[]) void
+        +downloadArquivo(String) byte[]
+    }
+
+    class AzureStorage {
+        +uploadArquivo(String, byte[]) void
+        +downloadArquivo(String) byte[]
+    }
+
+    GerenciadorDeArquivos o-- CloudStorageProvider : delega para n
+    AWSStorage ..|> CloudStorageProvider : implements
+    AzureStorage ..|> CloudStorageProvider : implements
+```
+
+---
+
 ## 🚀 How to Run
 
 ### Prerequisites
@@ -213,4 +266,9 @@ classDiagram
    ```bash
    javac -d bin src/EcommercePaymentGateway/*.java
    java -cp bin EcommercePaymentGateway.Main
+   ```
+5. Compile and run **Project 04 (Multi-Cloud Storage Orchestrator)**:
+   ```bash
+   javac -d bin src/StorageOrquestrator_MultiCloud/*.java
+   java -cp bin StorageOrquestrator_MultiCloud.Main
    ```
